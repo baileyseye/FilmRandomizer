@@ -1,1 +1,2 @@
-example_user2 - 2
+example_user2_movie1
+example_user2_movie2

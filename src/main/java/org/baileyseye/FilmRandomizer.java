@@ -10,24 +10,24 @@ import java.util.Scanner;
 public class FilmRandomizer {
     private List<String> user1Films;
     private List<String> user2Films;
-    private List<String> user1DeletedFilms;
-    private List<String> user2DeletedFilms;
+    private List<String> user1WatchedFilms;
+    private List<String> user2WatchedFilms;
     private static final String USER1_FILMS_FILE = "data/user1_films.txt";
     private static final String USER2_FILMS_FILE = "data/user2_films.txt";
-    private static final String USER1_DELETED_FILMS_FILE = "data/user1_deleted_films.txt";
-    private static final String USER2_DELETED_FILMS_FILE = "data/user2_deleted_films.txt";
+    private static final String USER1_WATCHED_FILMS_FILE = "data/user1_watched_films.txt";
+    private static final String USER2_WATCHED_FILMS_FILE = "data/user2_watched_films.txt";
 
     public static void main(String[] args) {
         FilmRandomizer filmRandomizer = new FilmRandomizer();
         filmRandomizer.printRandomFilm();
-        filmRandomizer.printDeletedFilms();
+        filmRandomizer.printWatchedFilms();
     }
 
     public FilmRandomizer() {
         user1Films = loadListFromFile(USER1_FILMS_FILE);
         user2Films = loadListFromFile(USER2_FILMS_FILE);
-        user1DeletedFilms = loadListFromFile(USER1_DELETED_FILMS_FILE);
-        user2DeletedFilms = loadListFromFile(USER2_DELETED_FILMS_FILE);
+        user1WatchedFilms = loadListFromFile(USER1_WATCHED_FILMS_FILE);
+        user2WatchedFilms = loadListFromFile(USER2_WATCHED_FILMS_FILE);
     }
 
     public void printRandomFilm() {
@@ -38,22 +38,22 @@ public class FilmRandomizer {
         scanner.nextLine();
 
         List<String> selectedUserFilms;
-        List<String> selectedUserDeletedFilms;
+        List<String> selectedUserWatchedFilms;
         String filmsFile;
-        String deletedFilmsFile;
+        String watchedFilmsFile;
 
         switch (userChoice) {
             case 1:
                 selectedUserFilms = user1Films;
-                selectedUserDeletedFilms = user1DeletedFilms;
+                selectedUserWatchedFilms = user1WatchedFilms;
                 filmsFile = USER1_FILMS_FILE;
-                deletedFilmsFile = USER1_DELETED_FILMS_FILE;
+                watchedFilmsFile = USER1_WATCHED_FILMS_FILE;
                 break;
             case 2:
                 selectedUserFilms = user2Films;
-                selectedUserDeletedFilms = user2DeletedFilms;
+                selectedUserWatchedFilms = user2WatchedFilms;
                 filmsFile = USER2_FILMS_FILE;
-                deletedFilmsFile = USER2_DELETED_FILMS_FILE;
+                watchedFilmsFile = USER2_WATCHED_FILMS_FILE;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid user choice: " + userChoice);
@@ -71,31 +71,31 @@ public class FilmRandomizer {
         System.out.println("Random movie: " + randomFilm);
 
         selectedUserFilms.remove(index);
-        selectedUserDeletedFilms.add(randomFilm);
+        selectedUserWatchedFilms.add(randomFilm);
         saveListToFile(selectedUserFilms, filmsFile);
-        saveListToFile(selectedUserDeletedFilms, deletedFilmsFile);
+        saveListToFile(selectedUserWatchedFilms, watchedFilmsFile);
     }
 
-    public void printDeletedFilms() {
+    public void printWatchedFilms() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Want to see a list of deleted movies? (Y/N)");
+        System.out.println("Want to see a list of watched movies? (Y/N)");
         String response = scanner.nextLine().trim().toUpperCase();
         if (response.equals("Y")) {
-            System.out.println("Deleted movies: ");
-            if (!user1DeletedFilms.isEmpty()) {
+            System.out.println("Watched movies: ");
+            if (!user1WatchedFilms.isEmpty()) {
                 System.out.println("User 1:");
-                for (String film : user1DeletedFilms) {
+                for (String film : user1WatchedFilms) {
                     System.out.println(film);
                 }
             }
-            if (!user2DeletedFilms.isEmpty()) {
+            if (!user2WatchedFilms.isEmpty()) {
                 System.out.println("User 2:");
-                for (String film : user2DeletedFilms) {
+                for (String film : user2WatchedFilms) {
                     System.out.println(film);
                 }
             }
         } else {
-            System.out.println("The list of deleted movies will not be shown.");
+            System.out.println("The list of watched movies will not be shown.");
         }
     }
 

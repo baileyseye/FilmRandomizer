@@ -19,7 +19,15 @@ public class FilmRandomizer {
 
     public static void main(String[] args) {
         FilmRandomizer filmRandomizer = new FilmRandomizer();
-        filmRandomizer.printRandomFilm();
+        FilmSelector.selectAndPrintRandomFilm(
+                filmRandomizer.user1Films,
+                filmRandomizer.user2Films,
+                filmRandomizer.user1WatchedFilms,
+                filmRandomizer.user2WatchedFilms,
+                USER1_FILMS_FILE,
+                USER2_FILMS_FILE,
+                USER1_WATCHED_FILMS_FILE,
+                USER2_WATCHED_FILMS_FILE);
         filmRandomizer.printWatchedFilms();
     }
 
@@ -28,52 +36,6 @@ public class FilmRandomizer {
         user2Films = loadListFromFile(USER2_FILMS_FILE);
         user1WatchedFilms = loadListFromFile(USER1_WATCHED_FILMS_FILE);
         user2WatchedFilms = loadListFromFile(USER2_WATCHED_FILMS_FILE);
-    }
-
-    public void printRandomFilm() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Which user do you choose? (Enter 1 or 2)");
-        int userChoice = scanner.nextInt();
-        scanner.nextLine();
-
-        List<String> selectedUserFilms;
-        List<String> selectedUserWatchedFilms;
-        String filmsFile;
-        String watchedFilmsFile;
-
-        switch (userChoice) {
-            case 1:
-                selectedUserFilms = user1Films;
-                selectedUserWatchedFilms = user1WatchedFilms;
-                filmsFile = USER1_FILMS_FILE;
-                watchedFilmsFile = USER1_WATCHED_FILMS_FILE;
-                break;
-            case 2:
-                selectedUserFilms = user2Films;
-                selectedUserWatchedFilms = user2WatchedFilms;
-                filmsFile = USER2_FILMS_FILE;
-                watchedFilmsFile = USER2_WATCHED_FILMS_FILE;
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid user choice: " + userChoice);
-        }
-
-        if (selectedUserFilms.isEmpty()) {
-            System.out.println("The movie list is empty for the selected user.");
-            return;
-        }
-
-        Random random = new Random();
-        int index = random.nextInt(selectedUserFilms.size());
-
-        String randomFilm = selectedUserFilms.get(index);
-        System.out.println("Random movie: " + randomFilm);
-
-        selectedUserFilms.remove(index);
-        selectedUserWatchedFilms.add(randomFilm);
-        saveListToFile(selectedUserFilms, filmsFile);
-        saveListToFile(selectedUserWatchedFilms, watchedFilmsFile);
     }
 
     public void printWatchedFilms() {
@@ -99,7 +61,7 @@ public class FilmRandomizer {
         }
     }
 
-    private List<String> loadListFromFile(String filename) {
+   public static List<String> loadListFromFile(String filename) {
         List<String> list = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -112,7 +74,7 @@ public class FilmRandomizer {
         return list;
     }
 
-    private void saveListToFile(List<String> list, String filename) {
+   public static void saveListToFile(List<String> list, String filename) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             for (String item : list) {
                 writer.write(item);

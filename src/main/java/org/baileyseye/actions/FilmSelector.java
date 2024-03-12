@@ -1,25 +1,30 @@
-package org.baileyseye;
+package org.baileyseye.actions;
+
+import org.baileyseye.user.UserChoice;
+import org.baileyseye.user.UserInteraction;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 
 public class FilmSelector {
-    public static void selectAndPrintRandomFilm
+
+    private final UserInteraction userInteraction;
+
+    public FilmSelector(UserInteraction userInteraction) {
+        this.userInteraction = userInteraction;
+    }
+
+    public  void selectAndPrintRandomFilm
             (
                     List<String> user1Films,
-             List<String> user2Films,
-             List<String> user1WatchedFilms,
-             List<String> user2WatchedFilms,
-             String user1FilmsFile, String user2FilmsFile,
-             String user1WatchedFilmsFile,
-             String user2WatchedFilmsFile
+                    List<String> user2Films,
+                    List<String> user1WatchedFilms,
+                    List<String> user2WatchedFilms,
+                    String user1FilmsFile, String user2FilmsFile,
+                    String user1WatchedFilmsFile,
+                    String user2WatchedFilmsFile
             ) {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Which user do you choose? (Enter 1 or 2)");
-        int userChoice = scanner.nextInt();
-        scanner.nextLine();
+        UserChoice userChoice = userInteraction.getUserChoice();
 
         List<String> selectedUserFilms;
         List<String> selectedUserWatchedFilms;
@@ -27,36 +32,36 @@ public class FilmSelector {
         String watchedFilmsFile;
 
         switch (userChoice) {
-            case 1:
+            case USER1:
                 selectedUserFilms = user1Films;
                 selectedUserWatchedFilms = user1WatchedFilms;
                 filmsFile = user1FilmsFile;
                 watchedFilmsFile = user1WatchedFilmsFile;
                 break;
-            case 2:
+            case USER2:
                 selectedUserFilms = user2Films;
                 selectedUserWatchedFilms = user2WatchedFilms;
                 filmsFile = user2FilmsFile;
                 watchedFilmsFile = user2WatchedFilmsFile;
                 break;
             default:
-                throw new IllegalArgumentException("Invalid user choice: " + userChoice);
+                userInteraction.displayError("Invalid user choice.");
+                return;
         }
 
         if (selectedUserFilms.isEmpty()) {
-            System.out.println("The movie list is empty for the selected user.");
+            userInteraction.displayMessage("The movie list is empty for the selected user.");
             return;
         }
 
         Random random = new Random();
         int index = random.nextInt(selectedUserFilms.size());
-
         String randomFilm = selectedUserFilms.get(index);
-        System.out.println("Random movie: " + randomFilm);
+        userInteraction.displayMessage("Random movie: " + randomFilm);
 
         selectedUserFilms.remove(index);
         selectedUserWatchedFilms.add(randomFilm);
-        FilmRandomizer.saveListToFile(selectedUserFilms, filmsFile);
-        FilmRandomizer.saveListToFile(selectedUserWatchedFilms, watchedFilmsFile);
+        FileSaver.saveListToFile(selectedUserFilms, filmsFile);
+        FileSaver.saveListToFile(selectedUserWatchedFilms, watchedFilmsFile);
     }
 }

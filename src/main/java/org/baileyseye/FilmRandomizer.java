@@ -28,10 +28,10 @@ public class FilmRandomizer {
                 user2Films,
                 user1WatchedFilms,
                 user2WatchedFilms,
-                "data/user1_films.txt",
-                "data/user2_films.txt",
-                "data/user1_watched_films.txt",
-                "data/user2_watched_films.txt");
+                USER1_FILMS_FILE,
+                USER2_FILMS_FILE,
+                USER1_WATCHED_FILMS_FILE,
+                USER2_WATCHED_FILMS_FILE);
 
         filmRandomizer.printWatchedFilms();
     }

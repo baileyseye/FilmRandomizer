@@ -1,4 +1,4 @@
-package org.baileyseye;
+package org.baileyseye.actions;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

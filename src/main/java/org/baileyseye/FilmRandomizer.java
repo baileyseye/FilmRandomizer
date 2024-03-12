@@ -1,5 +1,11 @@
 package org.baileyseye;
 
+import org.baileyseye.actions.FileLoader;
+import org.baileyseye.actions.FilmSelector;
+import org.baileyseye.actions.WatchedFilmsPrinter;
+import org.baileyseye.user.ConsoleUserInteraction;
+import org.baileyseye.user.UserInteraction;
+
 import java.util.List;
 
 public class FilmRandomizer {

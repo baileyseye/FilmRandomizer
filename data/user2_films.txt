@@ -1,3 +1,1 @@
-example_1_USER2
-example_2_USER2
 example_3_USER2

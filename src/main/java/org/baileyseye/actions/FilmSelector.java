@@ -1,4 +1,7 @@
-package org.baileyseye;
+package org.baileyseye.actions;
+
+import org.baileyseye.user.UserChoice;
+import org.baileyseye.user.UserInteraction;
 
 import java.util.List;
 import java.util.Random;

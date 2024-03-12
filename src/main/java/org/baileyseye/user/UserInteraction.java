@@ -1,4 +1,4 @@
-package org.baileyseye;
+package org.baileyseye.user;
 
 public interface UserInteraction {
     UserChoice getUserChoice();

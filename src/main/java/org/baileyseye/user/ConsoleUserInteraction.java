@@ -2,7 +2,9 @@ package org.baileyseye.user;
 
 import java.util.Optional;
 import java.util.Scanner;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ConsoleUserInteraction implements UserInteraction, AutoCloseable {
 
     private final Scanner scanner = new Scanner(System.in);
@@ -29,12 +31,12 @@ public class ConsoleUserInteraction implements UserInteraction, AutoCloseable {
 
     @Override
     public void displayMessage(String message) {
-        System.out.println(message);
+        log.info(message);
     }
 
     @Override
     public void displayError(String errorMessage) {
-        System.err.println(errorMessage);
+        log.error(errorMessage);
     }
 
     private String nextLine() {

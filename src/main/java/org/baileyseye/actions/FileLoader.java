@@ -1,22 +1,37 @@
 package org.baileyseye.actions;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import static java.util.Collections.emptyList;
+import static lombok.AccessLevel.PRIVATE;
+
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-public class FileLoader {
+@Slf4j
+@NoArgsConstructor(access = PRIVATE)
+public final class FileLoader {
+
     public static List<String> loadListFromFile(String filename) {
-        List<String> list = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                list.add(line);
+        try {
+            List<String> lines = Files.readAllLines(Path.of(filename), StandardCharsets.UTF_8);
+            List<String> items = new ArrayList<>(lines.size());
+
+            for (String line : lines) {
+                String item = line.strip();
+                if (!item.isEmpty()) {
+                    items.add(item);
+                }
             }
+
+            return items;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Unable to load list from file: {}", filename, e);
+            return emptyList();
         }
-        return list;
     }
 }

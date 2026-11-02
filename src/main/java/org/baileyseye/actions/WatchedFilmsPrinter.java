@@ -1,29 +1,29 @@
 package org.baileyseye.actions;
 
-import java.util.List;
-import java.util.Scanner;
+import static lombok.AccessLevel.PRIVATE;
 
-public class WatchedFilmsPrinter {
-    public static void printWatchedFilms(List<String> user1WatchedFilms, List<String> user2WatchedFilms) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Want to see a list of watched movies? (Y/N)");
-        String response = scanner.nextLine().trim().toUpperCase();
-        if ("Y".equals(response)) {
-            System.out.println("Watched movies: ");
-            if (!user1WatchedFilms.isEmpty()) {
-                System.out.println("User 1:");
-                for (String film : user1WatchedFilms) {
-                    System.out.println(film);
-                }
+import java.util.List;
+import lombok.NoArgsConstructor;
+import org.baileyseye.user.UserInteraction;
+
+@NoArgsConstructor(access = PRIVATE)
+public final class WatchedFilmsPrinter {
+
+    public static void printWatchedFilms(UserInteraction userInteraction, UserData... users) {
+        if (!userInteraction.confirm("Хотите посмотреть список просмотренных фильмов? (Д/Н)")) {
+            userInteraction.displayMessage("Список просмотренных фильмов не будет показан.");
+            return;
+        }
+
+        userInteraction.displayMessage("Просмотренные фильмы: ");
+
+        for (UserData user : users) {
+            List<String> watchedFilms = user.watchedFilms();
+
+            if (!watchedFilms.isEmpty()) {
+                userInteraction.displayMessage(user.label() + ":");
+                userInteraction.displayMessage(String.join(System.lineSeparator(), watchedFilms));
             }
-            if (!user2WatchedFilms.isEmpty()) {
-                System.out.println("User 2:");
-                for (String film : user2WatchedFilms) {
-                    System.out.println(film);
-                }
-            }
-        } else {
-            System.out.println("The list of watched movies will not be shown.");
         }
     }
 }

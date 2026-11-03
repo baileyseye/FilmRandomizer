@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FilmRandom — случайный фильм из списка двух пользователей</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-glow" aria-hidden="true"></div>
+
+<div class="wrap">
+
+    <header class="app-header">
+        <div class="brand">
+            <div class="logo" aria-hidden="true">🎬</div>
+            <div class="brand-text">
+                <h1>FilmRandom</h1>
+                <p class="subtitle">Случайный фильм из списка двух пользователей</p>
+            </div>
+        </div>
+        <div class="header-side">
+            <div class="stat-chips">
+                <span class="chip">🎞 К просмотру: <b id="totalFilms">0</b></span>
+                <span class="chip">✅ Просмотрено: <b id="totalWatched">0</b></span>
+            </div>
+            <span id="storageBadge" class="badge badge-warn" hidden>⚠️ localStorage недоступен — режим «в памяти»</span>
+        </div>
+    </header>
+
+    <noscript>
+        <div class="card card-danger-note">Для работы приложения необходимо включить JavaScript.</div>
+    </noscript>
+
+    <main>
+
+        <!-- 1. ВЫБОР ПОЛЬЗОВАТЕЛЯ -->
+        <section class="card" id="userSection">
+            <h2 class="card-title"><span class="step">1</span> Кто выбирает фильм?</h2>
+            <p class="card-hint">Аналог консольного ввода <code>1</code> или <code>2</code> в классе <code>FilmSelector</code>.</p>
+            <div class="user-toggle" role="group" aria-label="Выбор пользователя">
+                <button type="button" class="user-btn" data-user="user1" aria-pressed="false">
+                    <span class="user-emoji" aria-hidden="true">🍿</span>
+                    <span class="user-name">Пользователь 1</span>
+                    <span class="user-meta"><b id="u1FilmsCount">0</b> к просмотру · <b id="u1WatchedCount">0</b> просмотрено</span>
+                    <span class="user-check" aria-hidden="true">✔</span>
+                </button>
+                <button type="button" class="user-btn" data-user="user2" aria-pressed="false">
+                    <span class="user-emoji" aria-hidden="true">⭐</span>
+                    <span class="user-name">Пользователь 2</span>
+                    <span class="user-meta"><b id="u2FilmsCount">0</b> к просмотру · <b id="u2WatchedCount">0</b> просмотрено</span>
+                    <span class="user-check" aria-hidden="true">✔</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 2. СЛУЧАЙНЫЙ ФИЛЬМ -->
+        <section class="card card-hero" id="pickSection">
+            <h2 class="card-title"><span class="step">2</span> Выбор случайного фильма</h2>
+            <p class="card-hint">Фильм берётся из списка «К просмотру» выбранного пользователя и сразу переносится в «Просмотрено».</p>
+
+            <div class="roulette">
+                <div class="roulette-inner">
+                    <div class="roulette-title idle" id="rouletteTitle">Сначала выберите пользователя, затем нажмите кнопку ниже</div>
+                </div>
+            </div>
+
+            <div class="pick-actions">
+                <button type="button" id="pickBtn" class="btn btn-primary btn-lg">🎲 Выбрать случайный фильм</button>
+                <span class="hotkey-hint">или нажмите <kbd>Пробел</kbd></span>
+            </div>
+
+            <div id="pickResult" class="pick-result" hidden>
+                <div class="pick-result-title"><span>🎬 Случайный фильм:</span> <b id="pickResultName"></b></div>
+                <div class="pick-result-meta" id="pickResultMeta"></div>
+            </div>
+
+            <div id="historyBox" class="history" hidden>
+                <h3 class="history-title">🕘 История последних выборов (до 5)</h3>
+                <ol id="historyList" class="history-list"></ol>
+            </div>
+        </section>
+
+        <!-- 3. СПИСКИ -->
+        <section class="card" id="listsSection">
+            <h2 class="card-title"><span class="step">3</span> Списки фильмов</h2>
+            <p class="card-hint">Аналог файлов <code>user1_films.txt</code>, <code>user2_films.txt</code>, <code>user1_watched_films.txt</code>, <code>user2_watched_films.txt</code>. Данные хранятся в <code>localStorage</code>.</p>
+            <div class="lists-grid" id="listsGrid"></div>
+        </section>
+
+        <!-- 4. ПРОСМОТРЕННЫЕ -->
+        <section class="card" id="watchedSection">
+            <h2 class="card-title"><span class="step">4</span> Просмотренные фильмы</h2>
+            <p class="card-hint">Аналог вопроса <code>Want to see a list of watched movies? (Y/N)</code>.</p>
+            <div class="row-actions">
+                <button type="button" id="showWatchedBtn" class="btn btn-secondary">👀 Показать просмотренные фильмы</button>
+            </div>
+            <div id="watchedPanel" class="watched-panel" hidden>
+                <div class="watched-columns" id="watchedColumns"></div>
+                <p id="watchedEmptyNote" class="empty-note" hidden>Списки просмотренных фильмов пусты у обоих пользователей.</p>
+            </div>
+        </section>
+
+        <!-- 5. ДАННЫЕ -->
+        <section class="card" id="dataSection">
+            <h2 class="card-title"><span class="step">5</span> Данные: импорт и экспорт</h2>
+            <p class="card-hint">Аналог <code>FileLoader</code> / <code>FileSaver</code>. Экспорт и импорт работают через Blob и FileReader — без сети.</p>
+
+            <div class="data-grid">
+                <div class="data-block">
+                    <h3 class="data-title">⬇️ Экспорт</h3>
+                    <div class="row-actions">
+                        <button type="button" id="exportJsonBtn" class="btn btn-ghost">💾 Скачать .json (всё состояние)</button>
+                        <button type="button" id="exportTxtBtn" class="btn btn-ghost">📄 Скачать 4 файла .txt</button>
+                    </div>
+                    <p class="mini-note">Текстовые файлы: по одному названию фильма на строку, кодировка UTF-8.</p>
+                </div>
+
+                <div class="data-block">
+                    <h3 class="data-title">⬆️ Импорт</h3>
+                    <label class="field">
+                        <span class="field-label">Куда импортировать .txt</span>
+                        <select id="txtTarget" class="input">
+                            <option value="user1:films">Пользователь 1 → К просмотру</option>
+                            <option value="user1:watched">Пользователь 1 → Просмотрено</option>
+                            <option value="user2:films">Пользователь 2 → К просмотру</option>
+                            <option value="user2:watched">Пользователь 2 → Просмотрено</option>
+                        </select>
+                    </label>
+                    <label class="checkbox-line">
+                        <input type="checkbox" id="txtAppend" checked>
+                        <span>Добавлять к существующим (иначе — заменить список)</span>
+                    </label>
+                    <label class="file-drop">
+                        <input type="file" id="importFile" accept=".txt,.json,text/plain,application/json">
+                        <span class="file-drop-text">📂 Выберите файл <b>.txt</b> или <b>.json</b></span>
+                    </label>
+                </div>
+
+                <div class="data-block data-block-danger">
+                    <h3 class="data-title">♻️ Сброс</h3>
+                    <p class="mini-note">Вернуть исходные данные проекта: <code>example_1_USER1</code>, <code>example_2_USER1</code>, <code>example_3_USER1</code>, <code>example_3_USER2</code>, <code>example_2_USER2</code>, <code>example_1_USER2</code>.</p>
+                    <button type="button" id="resetBtn" class="btn btn-danger">🗑 Сбросить все данные</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="app-footer">
+        <p>FilmRandom · веб-интерфейс консольного Java-проекта · данные хранятся локально в браузере</p>
+    </footer>
+</div>
+
+<div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+<div id="modalOverlay" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalText">
+        <div class="modal-icon" aria-hidden="true">🍿</div>
+        <h3 id="modalTitle">Подтверждение</h3>
+        <p id="modalText"></p>
+        <div class="modal-actions">
+            <button type="button" id="modalNo" class="btn btn-ghost">Нет</button>
+            <button type="button" id="modalYes" class="btn btn-primary">Да</button>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
